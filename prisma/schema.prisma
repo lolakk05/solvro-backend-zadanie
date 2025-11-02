@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Members {
+  id           Int        @id @default(autoincrement())
+  name         String
+  surname      String
+  email        String?    @unique
+  indeks       Int?       @unique
+  fieldOfSTudy String?
+  section      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  Presence     Presence[]
+  Budgets      Budget[]
+  Partners     Partners[]
+}
+
+model Budget {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   Members? @relation(fields: [membersId], references: [id])
+  membersId Int?
+}
+
+enum Answer {
+  YES
+  NO
+  WAITING
+  PENDING
+}
+
+model Partners {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String?
+  email     String?  @unique
+  answer    Answer
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   Members? @relation(fields: [membersId], references: [id])
+  membersId Int?
+}
+
+model Presence {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  isPresent Boolean
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Members   Members? @relation(fields: [membersId], references: [id])
+  membersId Int
+}
